@@ -6,36 +6,21 @@ import java.util.concurrent.TimeUnit;
 
 public class FixedSizeThreadPoolExecutorExample {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executor.newFixedThreadPool(4);
+        final int maxCore = Runtime.getRuntime().availableProcessors();
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executor.newFixedThreadPool(maxCore);
+        System.out.println("Max thread pool size : " + executor.getMaximumPoolSize());
+
         for(int i=0; i<10; i++){
             final int jobId = i;
-            System.out.println(LocalTime.now() + " Execute tase " + jobId);
+            System.out.println(" Execute tase " + jobId);
 
             executor.execute(() -> {
-                System.out.println(LocalTime.now() + " Doing job "+jobId);
-                sleepSec(3);
-                System.out.println(LocalTime.now() + " Done job "+jobId);
+                System.out.println(" Doing job "+jobId);
             });
         }
 
         executor.shutdown();
-
-        if(executor.awaitTermination(20, TimeUnit.SECONDS)){
-            System.out.println(LocalTime.now() + " All jobs are terminated ");
-        } else {
-            System.out.println(LocalTime.now() + " some jobs are not terminated ");
-
-            executor.shutdown();
-        }
-    }
-
-    private static void sleepSec(int sec){
-        try {
-            TimeUnit.SECONDS.sleep(sec);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }
